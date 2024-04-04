@@ -31,7 +31,8 @@ pool.query("SELECT NOW()", (err, res) => {
 
 //generate new refresh token and access token
 let refreshTokens = [];
-app.post("api/refresh", (req, res) => {
+
+app.post("/api/refresh", (req, res) => {
   //take the refresh token from the user
   const refreshToken = req.body.token;
   //send error if there is no token or it's invalid
@@ -62,7 +63,7 @@ const generateAccessToken = (user) => {
     { id: user.id, isAdmin: user.isAdmin },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "15s",
+      expiresIn: "40s",
     }
   );
 };
@@ -92,6 +93,34 @@ const verify = (req, res, next) => {
   }
 };
 
+//login user
+app.post("/api/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const user = await pool.query(
+      "SELECT * FROM users WHERE username = $1 AND password = $2",
+      [username, password]
+    );
+    if (user.rows.length === 0) {
+      return res.status(401).json({
+        message: "Invalid credentials",
+      });
+    } else {
+      const accessToken = generateAccessToken(user.rows[0]);
+      const refreshToken = generateRefreshToken(user.rows[0]);
+      refreshTokens.push(refreshToken);
+      res.status(200).json({
+        message: "Login successful",
+        user: user.rows[0],
+        accessToken,
+        refreshToken,
+      });
+    }
+  } catch (error) {
+    console.error("Error logging in:", error);
+  }
+});
+
 //register user
 app.post("/api/register", async (req, res) => {
   try {
@@ -118,6 +147,30 @@ app.post("/api/register", async (req, res) => {
   } catch (error) {
     console.error("Error signing up:", error);
   }
+});
+
+//delete user
+app.delete("/api/users/:userId", verify, async (req, res) => {
+  try {
+    console.log(typeof req.user.id);
+    console.log(typeof req.params.userId);
+    if (req.user.id == req.params.userId || req.user.isAdmin) {
+      res.status(200).json("User has been deleted...");
+    } else {
+      res.status(403).json("You are not allowed to delete this user!");
+    }
+  } catch (error) {
+    console.err("Error deleting user:", error);
+  }
+});
+
+// logout user
+app.post("/api/logout", verify, (req, res) => {
+  const refreshToken = req.body.token;
+  refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+  res.status(200).json({
+    message: "Logged out successfully",
+  });
 });
 
 app.get("/", (req, res) => {

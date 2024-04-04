@@ -1,5 +1,10 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
+import UserContext from "../context/Usercontext";
 
 export default function root() {
-  return <div>root</div>;
+  const { user } = useContext(UserContext);
+  useEffect(() => {
+    console.log("Inside Root: ", user);
+  }, []);
+  return <div>Hello {user?.user.username}</div>;
 }

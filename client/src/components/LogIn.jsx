@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Form } from "react-router-dom";
 import styles from "./login.module.css";
 import axios from "axios";
+import UserContext from "../context/Usercontext";
 
 export default function LogIn() {
+  const { user, setUser } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -15,8 +17,11 @@ export default function LogIn() {
         password,
       });
       console.log(response.data);
+      response.data.user && setUser(response.data);
+      setUsername("");
+      setPassword("");
     } catch (error) {
-      console.error(error.response.data);
+      console.error(error);
     }
   }
 

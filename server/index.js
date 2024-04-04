@@ -63,7 +63,7 @@ const generateAccessToken = (user) => {
     { id: user.id, isAdmin: user.isAdmin },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "40s",
+      expiresIn: "60s",
     }
   );
 };
@@ -132,7 +132,7 @@ app.post("/api/register", async (req, res) => {
     const emailCheckResult = await pool.query(emailCheckQuery);
     if (emailCheckResult.rows.length > 0) {
       return res.status(400).json({
-        message: "Email already exists",
+        message: "User already exists",
       });
     }
     const insertUserQuery = {

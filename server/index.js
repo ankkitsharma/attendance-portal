@@ -35,6 +35,7 @@ let refreshTokens = [];
 app.post("/api/refresh", (req, res) => {
   //take the refresh token from the user
   const refreshToken = req.body.token;
+  console.log("refreshing token");
   //send error if there is no token or it's invalid
   if (!refreshToken) return res.status(401).json("You are not authenticated!");
   if (!refreshTokens.includes(refreshToken))
@@ -60,17 +61,17 @@ app.post("/api/refresh", (req, res) => {
 
 const generateAccessToken = (user) => {
   return jwt.sign(
-    { id: user.id, isAdmin: user.isAdmin },
+    { id: user.id, isAdmin: user.isadmin },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "60s",
+      expiresIn: "5m",
     }
   );
 };
 
 const generateRefreshToken = (user) => {
   return jwt.sign(
-    { id: user.id, isAdmin: user.isAdmin },
+    { id: user.id, isAdmin: user.isadmin },
     process.env.REFRESH_TOKEN_SECRET
   );
 };
@@ -170,6 +171,66 @@ app.post("/api/logout", verify, (req, res) => {
   refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
   res.status(200).json({
     message: "Logged out successfully",
+  });
+});
+
+// get Attendance
+app.get("/api/attendance/:userId", verify, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    if (userId !== req.user.id && !req.user.isAdmin) {
+      return res
+        .status(403)
+        .json("You are not allowed to view this user's attendance!");
+    }
+    const attendanceQuery = {
+      text: "SELECT * FROM attendances WHERE user_id = $1",
+      values: [userId],
+    };
+    const attendanceResult = await pool.query(attendanceQuery);
+    res.status(200).json({
+      message: "Attendance retrieved successfully",
+      attendances: attendanceResult.rows,
+    });
+  } catch (error) {
+    console.error("Error retrieving attendance:", error);
+    res.status(500).json("Error retrieving attendance");
+  }
+});
+
+// get Attendance for all users
+app.get("/api/attendance", verify, async (req, res) => {
+  if (!req.user.isAdmin) {
+    return res
+      .status(403)
+      .json("You are not allowed to view attendance for all users!");
+  }
+  const attendanceQuery = {
+    text: "SELECT * FROM attendances",
+  };
+  const attendanceResult = await pool.query(attendanceQuery);
+  res.status(200).json({
+    message: "Attendance retrieved successfully",
+    attendances: attendanceResult.rows,
+  });
+});
+
+// post attendance for a particular user
+app.post("/api/attendance/:userId", verify, async (req, res) => {
+  const userId = parseInt(req.params.userId);
+  if (userId !== req.user.id && !req.user.isAdmin) {
+    return res
+      .status(403)
+      .json("You are not allowed to post attendance for this user!");
+  }
+  const { date } = req.body;
+  const insertAttendanceQuery = {
+    text: "INSERT INTO attendances (user_id, date) VALUES ($1, $2)",
+    values: [userId, date],
+  };
+  await pool.query(insertAttendanceQuery);
+  res.status(201).json({
+    message: "Attendance added successfully",
   });
 });
 

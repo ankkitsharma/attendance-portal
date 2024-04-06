@@ -3,8 +3,10 @@ import { Form } from "react-router-dom";
 import styles from "./login.module.css";
 import axios from "axios";
 import UserContext from "../context/Usercontext";
+import { useNavigate } from "react-router-dom";
 
 export default function LogIn() {
+  const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +25,7 @@ export default function LogIn() {
       response.data.user && setUser(response.data);
       setUsername("");
       setPassword("");
+      navigate("/");
     } catch (error) {
       console.error(error);
     }

@@ -23,7 +23,7 @@ https://attendance-portal-server-2ap3koijz.vercel.app/
 ![image](https://github.com/ankkitsharma/attendance-portal/assets/78787267/a4d63afd-bdc2-4f48-a111-de9d4a50af84)
 ![image](https://github.com/ankkitsharma/attendance-portal/assets/78787267/bb81e2dd-77b6-4e55-adb7-f853ecaddc7c)
 ## Create Users for testing
-id username password isadmin
+| id | username | password | isadmin
 1	Ankit	sadkfsdjkf	true
 2	Rahul	ksanfss	false
 3	Samsher	kxcvkxckv	false

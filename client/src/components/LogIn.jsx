@@ -23,8 +23,8 @@ export default function LogIn() {
       );
       console.log(response.data);
       response.data.user && setUser(response.data);
-      setUsername("");
-      setPassword("");
+      // setUsername("");
+      // setPassword("");
       navigate("/");
     } catch (error) {
       console.error(error);

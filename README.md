@@ -4,6 +4,9 @@ A full-stack web application for managing attendance records using JavaScript te
 https://attendance-portal-client-tla0mvavq.vercel.app/
 # Server Link
 https://attendance-portal-server-2ap3koijz.vercel.app/
+## Important Notes
+* Register and Login as admin for fetching all users attendance
+* Register and Login as user for setting attendance for that user
 ## Features
 * Authentication
   * Log In

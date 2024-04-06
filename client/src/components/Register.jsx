@@ -11,11 +11,14 @@ export default function Register() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3000/api/register", {
-        username,
-        password,
-        isAdmin,
-      });
+      const response = await axios.post(
+        "https://attendance-portal-server-nine.vercel.app/api/register",
+        {
+          username,
+          password,
+          isAdmin,
+        }
+      );
       console.log(response.data);
       alert("Registered successfully, Please log in");
       setUsername("");

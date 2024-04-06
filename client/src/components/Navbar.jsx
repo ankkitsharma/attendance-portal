@@ -50,15 +50,22 @@ export const Navbar = () => {
       console.log(response.data);
       window.localStorage.removeItem("user");
       setUser(null);
+      navigate("/signIn");
     } catch (error) {
       console.error(error);
     }
   }
   return (
     <nav className={styles.navbar}>
-      <h1 className={styles.logo}>Attendance Portal</h1>
+      <h1 className={styles.logo} onClick={() => navigate("/")}>
+        Attendance Portal
+      </h1>
       <ul className={styles.links}>
-        <li className={styles.link}>About</li>
+        <li className={styles.link}>
+          <a href="https://github.com/ankkitsharma/attendance-portal">
+            © ankkitsharma 2024
+          </a>
+        </li>
         {user ? (
           <li className={styles.link} onClick={handleLogout}>
             logout

@@ -64,7 +64,7 @@ const generateAccessToken = (user) => {
     { id: user.id, isAdmin: user.isadmin },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "5m",
+      expiresIn: "15m",
     }
   );
 };
@@ -150,6 +150,25 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
+//get all users
+app.get("/api/users", verify, async (req, res) => {
+  if (!req.user.isAdmin) {
+    return res.status(403).json("Only admin is allowed to get all users!");
+  }
+  try {
+    const usersQuery = {
+      text: "SELECT id, username FROM users WHERE isAdmin = false",
+    };
+    const usersResult = await pool.query(usersQuery);
+    res.status(200).json({
+      users: usersResult.rows,
+    });
+  } catch (error) {
+    console.error("Error getting users:", error);
+    res.status(500).json("Error getting users");
+  }
+});
+
 //delete user
 app.delete("/api/users/:userId", verify, async (req, res) => {
   try {
@@ -206,11 +225,11 @@ app.get("/api/attendance", verify, async (req, res) => {
       .json("You are not allowed to view attendance for all users!");
   }
   const attendanceQuery = {
-    text: "SELECT * FROM attendances",
+    text: "SELECT attendances.*, users.username FROM attendances JOIN users ON users.id = attendances.user_id",
   };
   const attendanceResult = await pool.query(attendanceQuery);
   res.status(200).json({
-    message: "Attendance retrieved successfully",
+    message: "Attendance retrieved successfully for all users",
     attendances: attendanceResult.rows,
   });
 });

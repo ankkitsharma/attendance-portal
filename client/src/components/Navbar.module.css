@@ -10,6 +10,7 @@
 .logo {
   font-size: 2rem;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .links {
@@ -27,4 +28,9 @@
 
 .link:hover {
   background-color: #555;
+}
+
+.link a {
+  text-decoration: none;
+  color: white;
 }

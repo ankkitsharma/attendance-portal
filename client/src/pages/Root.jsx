@@ -11,8 +11,10 @@ export default function root() {
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
   const [attendances, setAttendances] = useState([]);
-  const [todayAttendances, setTodayAttendances] = useState([]);
+  const [todayAttendances, setTodayAttendances] = useState(false);
   const axiosJWT = axios.create();
+  const [users, setUsers] = useState([]);
+  const [userId, setUserId] = useState("");
 
   axiosJWT.interceptors.request.use(async (config) => {
     const currentDate = new Date();
@@ -55,18 +57,96 @@ export default function root() {
         setAttendances(dates);
         // console.log(dates);
         // console.log(response.data.attendances);
+
+        const today = new Date();
+        const todayAttendance = dates.some(
+          (date) => date.toDateString() === today.toDateString()
+        );
+        setTodayAttendances(todayAttendance);
       } catch (error) {
         console.error(error);
       }
     };
-    fetchAttendances();
-  }, [axiosJWT, user]);
+
+    if (user?.user.isadmin) {
+      getAllUsers();
+    } else {
+      fetchAttendances();
+    }
+  }, [user]);
+
+  const setAttendanceForToday = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+      };
+      const today = new Date();
+      const formattedDate = today.toISOString().slice(0, 10);
+      const response = await axiosJWT.post(
+        `http://localhost:3000/api/attendance/${user.user.id}`,
+        {
+          date: formattedDate,
+        },
+        config
+      );
+      console.log(response.data);
+      setTodayAttendances(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getAllUsers = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+      };
+      const response = await axiosJWT.get(
+        "http://localhost:3000/api/users",
+        config
+      );
+      console.log(response.data.users);
+      setUsers(response.data.users);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSelectUser = async (id) => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+      };
+      // const id = userId;
+      const response = await axiosJWT.get(
+        `http://localhost:3000/api/attendance/${id}`,
+        config
+      );
+      const dates = response.data.attendances.map((attendance) => {
+        return new Date(attendance.date);
+      });
+      setAttendances(dates);
+      console.log("dates for the selected user", dates);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className={styles.root}>
       <div className={styles.title}>
         {user ? (
-          "Hello " + user.user.username
+          user.user.isadmin ? (
+            "Hello Admin " + user.user.username
+          ) : (
+            "Hello " + user.user.username
+          )
         ) : (
           <span>
             You are not logged in{" "}
@@ -74,15 +154,69 @@ export default function root() {
           </span>
         )}
       </div>
-      <div className={styles.content}>
-        <DatePicker inline selected={new Date()} highlightDates={attendances} />
-        <div className={styles.attendance}>
-          <div className={styles.attendanceTitle}>Set Attendance for today</div>
-          <button className={styles.attendanceButton}>
-            I am Present today
-          </button>
+      {!user?.user.isadmin ? (
+        <div className={styles.content}>
+          <DatePicker
+            inline
+            selected={todayAttendances ? new Date() : null}
+            highlightDates={attendances}
+          />
+          <div className={styles.attendance}>
+            <div className={styles.attendanceTitle}>
+              {todayAttendances
+                ? "You have set today's attendance"
+                : "Set your attendance"}
+            </div>
+            <button
+              onClick={setAttendanceForToday}
+              className={
+                todayAttendances
+                  ? styles.attendanceButtonActive +
+                    " " +
+                    styles.attendanceButton
+                  : styles.attendanceButton
+              }
+            >
+              {todayAttendances ? (
+                <div>I am Present today</div>
+              ) : (
+                <div>Click Here</div>
+              )}
+            </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className={styles.content}>
+          <div className={styles.userSelect}>
+            <label htmlFor="user-select">
+              Select a user for showing their attendance:
+            </label>
+            <select
+              id="user-select"
+              onChange={(event) => {
+                setUserId(event.target.value);
+                const option = event.target.selectedOptions[0];
+                if (option) {
+                  const userId = option.value;
+                  handleSelectUser(userId);
+                }
+              }}
+            >
+              <option value="">Select a user</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.username}
+                </option>
+              ))}
+            </select>
+          </div>
+          <DatePicker
+            inline
+            disabledKeyboardNavigation
+            highlightDates={[...attendances]}
+          />
+        </div>
+      )}
     </div>
   );
 }

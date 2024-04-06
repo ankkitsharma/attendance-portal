@@ -40,40 +40,40 @@ export default function root() {
   });
 
   useEffect(() => {
-    const fetchAttendances = async () => {
-      try {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-        };
-        const response = await axiosJWT.get(
-          `http://localhost:3000/api/attendance/${user.user.id}`,
-          config
-        );
-        const dates = response.data.attendances.map((attendance) => {
-          return new Date(attendance.date);
-        });
-        setAttendances(dates);
-        // console.log(dates);
-        // console.log(response.data.attendances);
-
-        const today = new Date();
-        const todayAttendance = dates.some(
-          (date) => date.toDateString() === today.toDateString()
-        );
-        setTodayAttendances(todayAttendance);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     if (user?.user.isadmin) {
       getAllUsers();
     } else {
       fetchAttendances();
     }
   }, [user]);
+
+  const fetchAttendances = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+      };
+      const response = await axiosJWT.get(
+        `http://localhost:3000/api/attendance/${user.user.id}`,
+        config
+      );
+      const dates = response.data.attendances.map((attendance) => {
+        return new Date(attendance.date);
+      });
+      setAttendances(dates);
+      // console.log(dates);
+      // console.log(response.data.attendances);
+
+      const today = new Date();
+      const todayAttendance = dates.some(
+        (date) => date.toDateString() === today.toDateString()
+      );
+      setTodayAttendances(todayAttendance);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const setAttendanceForToday = async () => {
     try {
@@ -168,7 +168,7 @@ export default function root() {
                 : "Set your attendance"}
             </div>
             <button
-              onClick={setAttendanceForToday}
+              onClick={!todayAttendances ? setAttendanceForToday : null}
               className={
                 todayAttendances
                   ? styles.attendanceButtonActive +

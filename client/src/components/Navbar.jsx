@@ -66,6 +66,9 @@ export const Navbar = () => {
             © ankkitsharma 2024
           </a>
         </li>
+        <li className={styles.link} onClick={() => navigate("/signIn")}>
+          Choose User
+        </li>
         {user ? (
           <li className={styles.link} onClick={handleLogout}>
             logout

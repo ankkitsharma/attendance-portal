@@ -7,6 +7,7 @@ https://attendance-portal-server-2ap3koijz.vercel.app/
 ## Important Notes
 * Register and Login as admin for fetching all users attendance
 * Register and Login as user for setting attendance for that user
+* Scroll down for already created users for testing
 ## Features
 * Authentication
   * Log In

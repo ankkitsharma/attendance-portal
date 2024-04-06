@@ -21,7 +21,7 @@ export default function root() {
     const decodedToken = jwtDecode(user.accessToken);
     if (decodedToken.exp * 1000 < currentDate.getTime()) {
       const response = await axios.post(
-        "http://localhost:3000/api/refresh",
+        "https://attendance-portal-server-nine.vercel.app/api/refresh",
         { token: user.refreshToken },
         {
           headers: {
@@ -55,7 +55,7 @@ export default function root() {
         },
       };
       const response = await axiosJWT.get(
-        `http://localhost:3000/api/attendance/${user.user.id}`,
+        `https://attendance-portal-server-nine.vercel.app/api/attendance/${user.user.id}`,
         config
       );
       const dates = response.data.attendances.map((attendance) => {
@@ -85,7 +85,7 @@ export default function root() {
       const today = new Date();
       const formattedDate = today.toISOString().slice(0, 10);
       const response = await axiosJWT.post(
-        `http://localhost:3000/api/attendance/${user.user.id}`,
+        `https://attendance-portal-server-nine.vercel.app/api/attendance/${user.user.id}`,
         {
           date: formattedDate,
         },
@@ -106,7 +106,7 @@ export default function root() {
         },
       };
       const response = await axiosJWT.get(
-        "http://localhost:3000/api/users",
+        "https://attendance-portal-server-nine.vercel.app/api/users",
         config
       );
       console.log(response.data.users);
@@ -125,7 +125,7 @@ export default function root() {
       };
       // const id = userId;
       const response = await axiosJWT.get(
-        `http://localhost:3000/api/attendance/${id}`,
+        `https://attendance-portal-server-nine.vercel.app/api/attendance/${id}`,
         config
       );
       const dates = response.data.attendances.map((attendance) => {

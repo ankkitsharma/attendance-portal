@@ -16,7 +16,7 @@ export const Navbar = () => {
     const decodedToken = jwtDecode(user.accessToken);
     if (decodedToken.exp * 1000 < currentDate.getTime()) {
       const response = await axios.post(
-        "http://localhost:3000/api/refresh",
+        "https://attendance-portal-server-nine.vercel.app/api/refresh",
         { token: user.refreshToken },
         {
           headers: {
@@ -43,7 +43,7 @@ export const Navbar = () => {
       };
       const body = { token: user.refreshToken };
       const response = await axiosJWT.post(
-        "http://localhost:3000/api/logout",
+        "https://attendance-portal-server-nine.vercel.app/api/logout",
         body,
         config
       );

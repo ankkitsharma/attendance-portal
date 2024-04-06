@@ -12,10 +12,13 @@ export default function LogIn() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3000/api/login", {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "https://attendance-portal-server-nine.vercel.app/api/login",
+        {
+          username,
+          password,
+        }
+      );
       console.log(response.data);
       response.data.user && setUser(response.data);
       setUsername("");

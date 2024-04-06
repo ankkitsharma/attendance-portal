@@ -34,7 +34,7 @@ export default function Register() {
       <h2 className={styles.title}>Register</h2>
       <form className={styles.form}>
         <label htmlFor="username" className={styles.label}>
-          Email
+          Username
         </label>
         <input
           type="username"

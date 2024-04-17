@@ -1,9 +1,9 @@
 # Attendance Portal
 A full-stack web application for managing attendance records using JavaScript technologies including Node.js, Express, and React.
 # Website link
-https://attendance-portal-client-tla0mvavq.vercel.app/
+https://attendance-portal-client.vercel.app/
 # Server Link
-https://attendance-portal-server-2ap3koijz.vercel.app/
+https://attendance-portal-server-nine.vercel.app/
 ## Important Notes
 * Register and Login as admin for fetching all users attendance
 * Register and Login as user for setting attendance for that user
